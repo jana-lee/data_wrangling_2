@@ -2,15 +2,15 @@
 title: "data_wrangling_2"
 author: "Jana Lee"
 date: "10/10/2019"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
-library(viridis)
-library(leaflet)
+library(rvest)
+library(httr)
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,
@@ -26,5 +26,107 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
+
+# Lecture: Reading Data from the Web
+**2 ways to get data:**
+  1) Data included as content on a webpage, what you want to "scrape"
+  2) Dedicated server holding data in a relatively usable form (data.gov)
+Styling = CSS, makes stuff pretty
+
+**Application Programming Interfaces (APIs)** - someone has set up a way to let you access data. Don't need to extract HTML
+
+**Real talk about web data** - 
+- data from web is messy
+- it will frequently take a lot of work to figure out
+
+## Extracting Tables - Reading in NSDH Data
+Example is from the National Survey on Drug Use and Health. Includes tables relating to drug use in the past year or month, separately for specific kinds of drug use.
+```{r}
+url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
+drug_use_xml = 
+  read_html(url) 
+
+drug_use_xml %>% 
+  html_nodes(css = "table")
+# We can see that this is not too helpful, so we need to pull out HTML nodes. When using `html_nodes`, we see that there are 15 tables produced.
+
+# Use [[]] double brackets to 
+
+table_list = (drug_use_xml %>%  html_nodes(css = "table"))
+table_list [[1]] %>% 
+  html_table() %>% 
+  slice(-1)
+
+# Table structure ALMOST works, but the first element is this note. The footnote is being extracted as a single data element. Need to take this piece out by slide function
+
+table_marj =
+  table_list [[1]] %>% 
+  html_table() %>% 
+  slice(-1) %>% 
+  as_tibble()
+```
+
+## Learning Assessment
+```{r}
+
+```
+
+
+## CSS Selectors
+Getting HP data
+```{r}
+hpsaga_html = 
+  read_html("https://www.imdb.com/list/ls000630791/")
+```
+
+Need to get HP data nodes:
+```{r}
+hp_movie_name = 
+  hpsaga_html %>% 
+  html_nodes(".lister-item-header a") %>% 
+  html_text
+
+hp_runtime = 
+  hpsaga_html %>% 
+  html_nodes(".runtime") %>% 
+  html_text
+# Get "lister" from the Selector Gadget!! It knows!!!
+```
+
+## Learning Assessment: Getting Napolean Dynamite Review Data
+```{r}
+url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+dynamite_html = read_html(url)
+
+review_titles = 
+  dynamite_html %>%
+  html_nodes(".a-text-bold span") %>%
+  html_text()
+
+review_stars = 
+  dynamite_html %>%
+  html_nodes("#cm_cr-review_list .review-rating") %>%
+  html_text()
+
+review_text = 
+  dynamite_html %>%
+  html_nodes(".review-text-content span") %>%
+  html_text()
+
+reviews = tibble(
+  title = review_titles,
+  stars = review_stars,
+  text = review_text
+)
+# Tibble creates a DF.
+```
+
+
+
+
+## Using an API
+
+
 
 
