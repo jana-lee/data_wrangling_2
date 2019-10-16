@@ -354,4 +354,149 @@ reviews = tibble(
 # Tibble creates a DF.
 ```
 
-## Using an API
+## Using an API w/ Water Consumption in NYC
+
+``` r
+nyc_water = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.csv") %>% 
+  content("parsed")
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   year = col_double(),
+    ##   new_york_city_population = col_double(),
+    ##   nyc_consumption_million_gallons_per_day = col_double(),
+    ##   per_capita_gallons_per_person_per_day = col_double()
+    ## )
+
+``` r
+# Get = helps us get a URL. Can be JSON or CSV (CSV might be easier?)
+# Content = Extract content from a request
+```
+
+More examples for API Extraction
+
+``` r
+poke =
+  GET("http://pokeapi.co/api/v2/pokemon/1") %>%
+  content()
+```
+
+# Lecture: Strings vs. Factors
+
+Both look like character vectors, but strings are just like strings.
+Factors have an underlying numeric structure. Stringr package is what we
+will be using\!
+
+Regular expressions = naming things in r, what you have named, you might
+need to search for them.
+
+Factors = few categorical variables siting on top of each other. Forcats
+package. -when you use linear models, need reference categories - have
+to be in control of factor variables -for categorical variables and
+anagram for factors
+
+\#\#Strings and Regex
+
+``` r
+library(p8105.datasets)
+
+string_vec = c("my", "name", "is", "jeff")
+
+str_detect(string_vec, "jeff")
+```
+
+    ## [1] FALSE FALSE FALSE  TRUE
+
+``` r
+#str prefix: every function that we want to use in stringr package is this. We can scroll through str to see what exists. str_detect detects whether "jeff" is in each of the strings. It doesn't exist in the first 3, but it does in the last.
+```
+
+str\_replace
+
+``` r
+str_replace(string_vec, "jeff", "Jeff")
+```
+
+    ## [1] "my"   "name" "is"   "Jeff"
+
+New string vector
+
+``` r
+string_vec = c(
+  "i think we all rule for participating",
+  "i think i have been caught",
+  "i think this will be quite fun actually",
+  "it will be fun, i think"
+  )
+str_detect(string_vec, "^i think")
+```
+
+    ## [1]  TRUE  TRUE  TRUE FALSE
+
+``` r
+# ^ is start of a string variable
+
+str_detect(string_vec, "^i think$")
+```
+
+    ## [1] FALSE FALSE FALSE FALSE
+
+``` r
+# $ends with a string variable
+```
+
+New string vector
+
+``` r
+string_vec = c(
+  "Y'all remember Pres. HW Bush?",
+  "I saw a green bush",
+  "BBQ and Bushwalking at Molonglo Gorge",
+  "BUSH -- LIVE IN CONCERT!!"
+  )
+str_detect(string_vec, "[Bb]ush")
+```
+
+    ## [1]  TRUE  TRUE  TRUE FALSE
+
+``` r
+# detecting any match of "bush". Either start with a capital B or lowercase b. Doesn't detect all caps!
+```
+
+New string vector
+
+``` r
+string_vec = c(
+  '7th inning stretch',
+  '1st half soon to begin. Texas won the toss.',
+  'she is 5 feet 4 inches tall',
+  '3AM - cant sleep :('
+  )
+str_detect(string_vec, "[0-9][a-zA-Z]")
+```
+
+    ## [1]  TRUE  TRUE FALSE  TRUE
+
+``` r
+# any number from 0-9, followed by any letter lower case a-z to upper case a-z
+```
+
+New string vector
+
+``` r
+string_vec = c(
+  'Its 7:11 in the evening',
+  'want to go to 7-11?',
+  'my flight is AA711',
+  'NetBios: scanning ip 203.167.114.66'
+  )
+str_detect(string_vec, "7.11")
+```
+
+    ## [1]  TRUE  TRUE FALSE  TRUE
+
+``` r
+# finds 7 number followed by 11. . matches any character at all. AA711 doesn't count bc no character in between 7 and
+```
