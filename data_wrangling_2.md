@@ -500,3 +500,56 @@ str_detect(string_vec, "7.11")
 ``` r
 # finds 7 number followed by 11. . matches any character at all. AA711 doesn't count bc no character in between 7 and
 ```
+
+\[Missing\]
+
+Restaurant Inspections
+
+``` r
+library(p8105.datasets)
+data("rest_inspec")
+
+rest_inspec =
+  rest_inspec %>%
+  filter(grade %in% c("A", "B", "C"), boro != "Missing") %>% 
+  mutate(boro = str_to_title(boro))
+```
+
+Visualizing pizza places\! But this isn’t sorted in the order that I
+like…
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>%
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() 
+```
+
+<img src="data_wrangling_2_files/figure-gfm/unnamed-chunk-15-1.png" width="90%" />
+
+Using fct\_infreq –\> able to get the order I want by decreasing. Boro =
+borough
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>%
+  mutate(boro = fct_infreq(boro)) %>%
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() 
+```
+
+<img src="data_wrangling_2_files/figure-gfm/unnamed-chunk-16-1.png" width="90%" />
+
+Can use str\_replace to replace matched patterns in a string
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>%
+  mutate(
+    boro = fct_infreq(boro),
+    boro = str_replace(boro, "Brooklyn", "HipsterHQ")) %>%
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() 
+```
+
+<img src="data_wrangling_2_files/figure-gfm/unnamed-chunk-17-1.png" width="90%" />
